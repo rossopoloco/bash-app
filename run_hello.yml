@@ -1,0 +1,12 @@
+---
+- name: Run hello.sh locally
+  hosts: local
+  become: true
+  tasks:
+    - name: Ensure hello.sh is executable
+      file:
+        path: /home/ec2-user/ansible-test/hello.sh
+        mode: '0755'
+
+    - name: Run hello.sh
+      shell: /home/ec2-user/ansible-test/hello.sh
