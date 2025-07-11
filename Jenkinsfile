@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_CREDENTIALS = 'aws-creds-id'   // 你在 Jenkins 中配置的 AWS 凭证 ID (Username with password)
-        TF_WORKING_DIR = 'tf-project'           // Terraform 目录
+        TF_WORKING_DIR = 'infra'           // Terraform 目录
     }
 
     stages {
