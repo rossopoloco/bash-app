@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_CREDENTIALS = 'aws-creds-id'  // 这里填你在 Jenkins 配置的 AWS 凭证 ID
-        TF_WORKING_DIR = 'terraform'     // Terraform 代码目录，视你的项目结构调整
+        TF_WORKING_DIR = 'infra'     // Terraform 代码目录，视你的项目结构调整
     }
 
     stages {
