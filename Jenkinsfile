@@ -33,7 +33,11 @@ pipeline {
                             passwordVariable: 'TMP_AWS_SECRET_ACCESS_KEY'
                         )
                     ]) {
-                        sh 'terraform init -input=false -reconfigure'
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$TMP_AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$TMP_AWS_SECRET_ACCESS_KEY
+                            terraform init -input=false -reconfigure
+                        '''
                     }
                 }
             }
