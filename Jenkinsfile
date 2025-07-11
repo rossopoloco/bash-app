@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        AWS_CREDENTIALS = 'aws-creds-id'  // 这里填你在 Jenkins 配置的 AWS 凭证 ID
-        TF_WORKING_DIR = 'infra'     // Terraform 代码目录，视你的项目结构调整
+        AWS_CREDENTIALS = 'aws-creds-id'   // 你在 Jenkins 中配置的 AWS 凭证 ID (Username with password)
+        TF_WORKING_DIR = 'infra'           // Terraform 目录
     }
 
     stages {
@@ -24,14 +24,21 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 dir("${TF_WORKING_DIR}") {
-                    withCredentials([usernamePassword(credentialsId: "${AWS_CREDENTIALS}", usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                    terraform plan -out=tfplan -input=false
-                    terraform show -no-color tfplan > plan.txt
-                '''
-                archiveArtifacts artifacts: 'plan.txt'
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: "${AWS_CREDENTIALS}",
+                            usernameVariable: 'AWS_ACCESS_KEY_ID',
+                            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                        )
+                    ]) {
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                            terraform plan -out=tfplan -input=false
+                            terraform show -no-color tfplan > plan.txt
+                        '''
+                        archiveArtifacts artifacts: 'plan.txt'
+                    }
                 }
             }
         }
@@ -45,11 +52,18 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 dir("${TF_WORKING_DIR}") {
-                    withCredentials([[
-                        $class: 'AmazonWebServicesCredentialsBinding',
-                        credentialsId: "${AWS_CREDENTIALS}"
-                    ]]) {
-                        sh 'terraform apply -input=false tfplan'
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: "${AWS_CREDENTIALS}",
+                            usernameVariable: 'AWS_ACCESS_KEY_ID',
+                            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                        )
+                    ]) {
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                            terraform apply -input=false tfplan
+                        '''
                     }
                 }
             }
@@ -58,13 +72,10 @@ pipeline {
 
     post {
         success {
-            echo 'Terraform apply 成功！'
-            // 这里可以添加邮件或Slack通知
+            echo '✅ Terraform apply 成功！'
         }
         failure {
-            echo '流水线失败！'
-            // 失败通知
+            echo '❌ 流水线失败！'
         }
     }
-}
 }
