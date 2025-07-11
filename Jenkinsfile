@@ -26,10 +26,19 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir("${TF_WORKING_DIR}") {
-                    sh 'terraform init -input=false'
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: "${AWS_CREDENTIALS}",
+                            usernameVariable: 'TMP_AWS_ACCESS_KEY_ID',
+                            passwordVariable: 'TMP_AWS_SECRET_ACCESS_KEY'
+                        )
+                    ]) {
+                        sh 'terraform init -input=false -reconfigure'
+                    }
                 }
             }
         }
+
 
         stage('Terraform Plan') {
             steps {
