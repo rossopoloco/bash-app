@@ -85,7 +85,7 @@ resource "aws_instance" "web" {
 }
 
 resource "aws_s3_bucket" "mybucket" {
-  bucket = "kaiyihuang-devops-bucket-202507" # 全局唯一名字，自行改
+  bucket = "kaiyihuang-devops-bucket-202507-new" # 全局唯一名字，自行改
   acl    = "private"
   
   tags = {
