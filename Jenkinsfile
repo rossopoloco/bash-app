@@ -12,6 +12,16 @@ pipeline {
                 checkout scm
             }
         }
+        
+        stage('Terraform Version Checkout') {
+            steps {
+                dir("${TF_WORKING_DIR}"){
+                    sh '''
+                    terraform version
+                    '''
+                }
+            }
+        }
 
         stage('Terraform Init') {
             steps {
