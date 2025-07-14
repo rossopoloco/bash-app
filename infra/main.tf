@@ -83,7 +83,7 @@ resource "aws_instance" "web" {
   
   iam_instance_profile = aws_iam_instance_profile.cloudwatch_profile.name
   
-  **key_name = "devops-key"**  # 新增这行！
+  key_name = "devops-key"  # 新增这行！
   
   user_data = <<-EOF
               #!/bin/bash
